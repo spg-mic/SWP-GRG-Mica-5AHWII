@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+ 
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../dev.db"
+}
+
+
+model Question {
+  id            String     @id @default(cuid())
+  question      String
+  typeId        String
+  type          Type       @relation(fields: [typeId], references: [id])
+  difficultyId  String
+  difficulty    Difficulty @relation(fields: [difficultyId], references: [id])
+  categoryId    String
+  category      Category   @relation(fields: [categoryId], references: [id])
+  answers       Answer[]
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+}
+
+model Type {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  questions Question[]
+}
+
+model Difficulty {
+  id        String     @id @default(cuid())
+  level     String     @unique
+  questions Question[]
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  questions Question[]
+}
+
+
+
