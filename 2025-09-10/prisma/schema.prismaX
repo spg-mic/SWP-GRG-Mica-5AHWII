@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
- 
+  provider = "prisma-client"
+  output = "client"
+  runtime ="deno"
 }
 
 datasource db {
@@ -29,7 +30,7 @@ model Question {
 
 model Answer {
   id         String   @id @default(cuid())
-  text       String
+  text       String   @unique
   isCorrect  Boolean
   questionId String
   question   Question @relation(fields: [questionId], references: [id])
