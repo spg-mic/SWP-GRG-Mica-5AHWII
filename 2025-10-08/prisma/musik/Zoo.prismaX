@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client"
+    output   = "client"
+    runtime  = "deno"
+}
+
+
+model Zoo {
+  id          Int          @id @default(autoincrement())
+  name        String
+  abteilungen Abteilung[]
+}
+
+model Abteilung {
+  id          Int          @id @default(autoincrement())
+  name        String
+  zooId       Int
+  zoo         Zoo          @relation(fields: [zooId], references: [id])
+  tiere       Tier[]
+  mitarbeiter Mitarbeiter[]
+}
+
+model Tier {
+  id           Int        @id @default(autoincrement())
+  name         String
+  abteilungId  Int
+  abteilung    Abteilung  @relation(fields: [abteilungId], references: [id])
+}
+
+model Mitarbeiter {
+  id          Int          @id @default(autoincrement())
+  name        String
+  abteilungen Abteilung[]
+}
