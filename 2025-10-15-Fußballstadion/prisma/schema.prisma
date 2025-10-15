@@ -1,0 +1,57 @@
+/* Entities:
+
+- Player
+- - spielt in EINER Mannschaft
+- Mannschaft
+- - viele Player
+- Match
+- - stadion
+- - mannschaft a geben b
+- - datum
+- - ergebnis
+- Stadion
+- - name
+- - stadt
+*/
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // oder "postgresql", je nach Bedarf
+  url      = "file:./dev.db"
+}
+
+model Player {
+  id           Int        @id @default(autoincrement())
+  name         String
+  mannschaftId Int
+  mannschaft   Mannschaft @relation(fields: [mannschaftId], references: [id])
+}
+
+model Mannschaft {
+  id      Int      @id @default(autoincrement())
+  name    String
+  players Player[]
+  matchesA Match[] @relation("MannschaftA")
+  matchesB Match[] @relation("MannschaftB")
+}
+
+model Stadion {
+  id    Int    @id @default(autoincrement())
+  name  String
+  stadt String
+  matches Match[]
+}
+
+model Match {
+  id             Int         @id @default(autoincrement())
+  datum          DateTime
+  ergebnis       String
+  stadionId      Int
+  stadion        Stadion     @relation(fields: [stadionId], references: [id])
+  mannschaftAId  Int
+  mannschaftA    Mannschaft  @relation("MannschaftA", fields: [mannschaftAId], references: [id])
+  mannschaftBId  Int
+  mannschaftB    Mannschaft  @relation("MannschaftB", fields: [mannschaftBId], references: [id])
+}
