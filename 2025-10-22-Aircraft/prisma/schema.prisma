@@ -1,0 +1,79 @@
+
+generator client {
+  provider = "prisma-client"
+  output = "client"
+  runtime = "deno"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "DATABASE_URL"
+}
+
+// Aircraft domain models
+// Following Prisma latest conventions: implicit many-to-many relations (no explicit join tables)
+
+model Country {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  code      String    @unique
+  airports  Airport[]
+  airlines  Airline[]
+  passengers Passenger[]
+}
+
+model Airport {
+  id         String       @id @default(uuid())
+  name       String
+  city       String
+  countryId  Int
+  country    Country   @relation(fields: [countryId], references: [id])
+  departures Flight[]  @relation("Departure")
+  arrivals   Flight[]  @relation("Arrival")
+}
+
+model Airline {
+  id         Int        @id @default(autoincrement())
+  name       String
+  countryId  Int?
+  country    Country?   @relation(fields: [countryId], references: [id])
+  aircrafts  Aircraft[]
+  flights    Flight[]
+}
+
+model Aircraft {
+  id         Int       @id @default(autoincrement())
+  model      String
+  manufacturer String
+  seats   Int
+  airlineId  Int?
+  airline    Airline?  @relation(fields: [airlineId], references: [id])
+  flights    Flight[]
+}
+
+model Passenger {
+  id        Int      @id @default(autoincrement())
+  fullname  String
+  email     String   @unique
+  nationalityId Int?
+  nationality   Country? @relation(fields: [nationalityId], references: [id])
+  flights   Flight[] @relation("PassengersOnFlights")
+}
+
+model Flight {
+  id             Int        @id @default(autoincrement())
+  flightNumber   String
+  departureTime  DateTime
+  arrivalTime    DateTime
+  originId       Int
+  origin         Airport    @relation("Departure", fields: [originId], references: [id])
+  destinationId  Int
+  destination    Airport    @relation("Arrival", fields: [destinationId], references: [id])
+  airlineId      Int?
+  airline        Airline?   @relation(fields: [airlineId], references: [id])
+  aircraftId     Int?
+  aircraft       Aircraft?  @relation(fields: [aircraftId], references: [id])
+  passengers     Passenger[] @relation("PassengersOnFlights")
+  seatCount      Int?
+  status         String?
+}

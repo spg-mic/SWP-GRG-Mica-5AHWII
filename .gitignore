@@ -1,1 +1,9 @@
+.~lock.*#
+**/*.db
+**/plantuml-images/
 **/node_modules/
+tmp
+**/bin/
+**/obj/
+**/prisma/client/
+**/.env
