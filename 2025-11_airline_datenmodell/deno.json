@@ -5,6 +5,7 @@
         "pmd": "deno run -A prisma migrate dev",
         "seed": "deno run -A --env-file seed.ts"
     },
+    "nodeModulesDir": "auto",
     "imports": {
         "@faker-js/faker": "npm:@faker-js/faker@^10.1.0",
         "@prisma/client": "npm:@prisma/client@^6.18.0",
