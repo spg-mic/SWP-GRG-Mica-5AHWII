@@ -1,1 +1,13 @@
 GET http://localhost:5000/
+
+# Get flights (with origin,destination,plane)
+GET http://localhost:5000/flights
+
+# Get a single flight by id (replace :id with a real flight id)
+GET http://localhost:5000/flights/:id
+
+# List airports
+GET http://localhost:5000/airports
+
+# List planes
+GET http://localhost:5000/planes
