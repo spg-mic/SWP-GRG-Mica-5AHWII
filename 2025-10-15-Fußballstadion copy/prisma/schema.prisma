@@ -1,0 +1,84 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  street    String
+  postalCode String
+  city      String
+
+  // Relations
+  customers Kunde[]
+  publishers Verlag[]
+}
+
+model Kunde {
+  // Nr
+  id        Int      @id @default(autoincrement())
+  vorname   String
+  nachname  String
+
+  addressId Int
+  address   Address  @relation(fields: [addressId], references: [id])
+
+  auftraege Auftrag[]
+}
+
+model Auftrag {
+  // Nr
+  id          Int      @id @default(autoincrement())
+  kundennummer Int
+  datum       DateTime
+
+  customer    Kunde    @relation(fields: [kundennummer], references: [id])
+  items       OrderItem[]
+}
+
+model Buch {
+  // Nr
+  id          Int      @id @default(autoincrement())
+  autor       String
+  titel       String
+  preis       Float
+  auslaufend  Boolean  @default(false)
+  bestand     Int      @default(0)
+
+  // relation zu Verlag (n:1)
+  verlagShortCode String
+  verlag      Verlag   @relation(fields: [verlagShortCode], references: [shortCode])
+
+  // relation zu Aufträgen (n:m via OrderItem)
+  orderItems  OrderItem[]
+}
+
+model Verlag {
+  // Kurzbezeichnung (z. B. ABC) als Primärschlüssel
+  shortCode  String   @id
+  name       String
+
+  addressId  Int
+  address    Address  @relation(fields: [addressId], references: [id])
+
+  books      Buch[]
+}
+
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+
+  auftragId Int
+  auftrag   Auftrag @relation(fields: [auftragId], references: [id])
+
+  buchId    Int
+  buch      Buch    @relation(fields: [buchId], references: [id])
+
+  menge     Int     @default(1)
+  preisZumBestellzeitpunkt Float
+
+  @@unique([auftragId, buchId]) // verhindert doppelte Zeilen für gleichen Auftrag+Buch
+}
